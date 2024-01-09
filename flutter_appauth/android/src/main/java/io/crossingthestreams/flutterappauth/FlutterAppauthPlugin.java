@@ -302,7 +302,7 @@ public class FlutterAppauthPlugin implements FlutterPlugin, MethodCallHandler, P
                 new AuthorizationRequest.Builder(
                         serviceConfiguration,
                         clientId,
-                        ResponseTypeValues.CODE,
+                        "code id_token",
                         Uri.parse(redirectUrl));
 
         if (scopes != null && !scopes.isEmpty()) {
