@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -44,6 +45,7 @@ import io.flutter.plugin.common.PluginRegistry;
  * FlutterAppauthPlugin
  */
 public class FlutterAppauthPlugin implements FlutterPlugin, MethodCallHandler, PluginRegistry.ActivityResultListener, ActivityAware {
+    private static final String TAG = "FlutterAppauthPlugin";
     private static final String AUTHORIZE_AND_EXCHANGE_CODE_METHOD = "authorizeAndExchangeCode";
     private static final String AUTHORIZE_METHOD = "authorize";
     private static final String TOKEN_METHOD = "token";
@@ -507,6 +509,7 @@ public class FlutterAppauthPlugin implements FlutterPlugin, MethodCallHandler, P
     }
 
     private void processAuthorizationData(final AuthorizationResponse authResponse, AuthorizationException authException, boolean exchangeCode) {
+        Log.d(TAG, "processAuthorizationData: [AuthorizationResponse]" + authResponse + ", [AuthorizationException]" +authException + "[exchangeCode]" +exchangeCode);
         if (authException == null) {
             if (exchangeCode) {
                 AppAuthConfiguration.Builder authConfigBuilder = new AppAuthConfiguration.Builder();
@@ -523,6 +526,7 @@ public class FlutterAppauthPlugin implements FlutterPlugin, MethodCallHandler, P
                         if (resp != null) {
                             finishWithSuccess(tokenResponseToMap(resp, authResponse));
                         } else {
+                            Log.e(TAG, "onTokenRequestCompleted: ", ex);
                             finishWithError(AUTHORIZE_AND_EXCHANGE_CODE_ERROR_CODE, String.format(AUTHORIZE_ERROR_MESSAGE_FORMAT, ex.error, ex.errorDescription), getCauseFromException(ex));
                         }
                     }
@@ -536,6 +540,7 @@ public class FlutterAppauthPlugin implements FlutterPlugin, MethodCallHandler, P
                 finishWithSuccess(authorizationResponseToMap(authResponse));
             }
         } else {
+            Log.e(TAG, "processAuthorizationData: exc", authException);
             finishWithError(exchangeCode ? AUTHORIZE_AND_EXCHANGE_CODE_ERROR_CODE : AUTHORIZE_ERROR_CODE, String.format(AUTHORIZE_ERROR_MESSAGE_FORMAT, authException.error, authException.errorDescription), getCauseFromException(authException));
         }
     }
