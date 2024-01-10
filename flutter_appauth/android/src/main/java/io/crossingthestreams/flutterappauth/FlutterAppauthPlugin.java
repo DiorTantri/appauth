@@ -490,7 +490,9 @@ public class FlutterAppauthPlugin implements FlutterPlugin, MethodCallHandler, P
             if (intent == null) {
                 finishWithError(NULL_INTENT_ERROR_CODE, NULL_INTENT_ERROR_FORMAT, null);
             } else {
-                Log.d(TAG, "onActivityResult: uriString " + intent.getData().toString());
+                String url = "";
+                url = intent.getData() != null ? intent.getData().toString() : "";
+                Log.d(TAG, "onActivityResult: uriString " + url);
                 final AuthorizationResponse authResponse = AuthorizationResponse.fromIntent(intent);
                 AuthorizationException ex = AuthorizationException.fromIntent(intent);
                 processAuthorizationData(authResponse, ex, requestCode == RC_AUTH_EXCHANGE_CODE);
