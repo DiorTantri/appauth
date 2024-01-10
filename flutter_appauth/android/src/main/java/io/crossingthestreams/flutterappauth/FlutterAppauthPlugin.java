@@ -307,6 +307,8 @@ public class FlutterAppauthPlugin implements FlutterPlugin, MethodCallHandler, P
                         "code id_token",
                         Uri.parse(redirectUrl));
 
+        authRequestBuilder.setState(null);
+
         if (scopes != null && !scopes.isEmpty()) {
             authRequestBuilder.setScopes(scopes);
         }
@@ -488,6 +490,7 @@ public class FlutterAppauthPlugin implements FlutterPlugin, MethodCallHandler, P
             if (intent == null) {
                 finishWithError(NULL_INTENT_ERROR_CODE, NULL_INTENT_ERROR_FORMAT, null);
             } else {
+                Log.d(TAG, "onActivityResult: uriString " + intent.getData().toString());
                 final AuthorizationResponse authResponse = AuthorizationResponse.fromIntent(intent);
                 AuthorizationException ex = AuthorizationException.fromIntent(intent);
                 processAuthorizationData(authResponse, ex, requestCode == RC_AUTH_EXCHANGE_CODE);
