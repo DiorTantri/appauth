@@ -494,10 +494,9 @@ public class FlutterAppauthPlugin implements FlutterPlugin, MethodCallHandler, P
                 String url = "";
                 url = intent.getData() != null ? intent.getData().toString() : "";
                 Log.d(TAG, "onActivityResult: uriString " + url);
-
                 final AuthorizationResponse authResponse = AuthorizationResponse.fromIntent(intent);
                 AuthorizationException ex = AuthorizationException.fromIntent(intent);
-                processAuthorizationData(authResponse, ex, requestCode == RC_AUTH_EXCHANGE_CODE);
+                processAuthorizationData(authResponse, ex, requestCode == RC_AUTH_EXCHANGE_CODE,url);
             }
             return true;
         }
@@ -515,10 +514,13 @@ public class FlutterAppauthPlugin implements FlutterPlugin, MethodCallHandler, P
         return false;
     }
 
-    private void processAuthorizationData(final AuthorizationResponse authResponse, AuthorizationException authException, boolean exchangeCode) {
+    private void processAuthorizationData(final AuthorizationResponse authResponse,
+                                          AuthorizationException authException,
+                                          boolean exchangeCode,
+                                          String uri) {
         Log.d(TAG, "processAuthorizationData: [AuthorizationResponse]" + authResponse + ", [AuthorizationException]" +authException + "[exchangeCode]" +exchangeCode);
         if (authException == null) {
-            finishWithSuccess(authorizationResponseToMap(authResponse));
+            finishWithSuccess(authorizationResponseToMap(authResponse,uri));
 
             /* if (exchangeCode) {
                 AppAuthConfiguration.Builder authConfigBuilder = new AppAuthConfiguration.Builder();
@@ -574,12 +576,14 @@ public class FlutterAppauthPlugin implements FlutterPlugin, MethodCallHandler, P
 
 
 
-    private Map<String, Object> authorizationResponseToMap(AuthorizationResponse authResponse) {
+    private Map<String, Object> authorizationResponseToMap(AuthorizationResponse authResponse,String uri) {
         Map<String, Object> responseMap = new HashMap<>();
+        Map<String, String> param = authResponse.additionalParameters;
+        param.put("uri",uri);
         responseMap.put("codeVerifier", authResponse.request.codeVerifier);
         responseMap.put("nonce", authResponse.request.nonce);
         responseMap.put("authorizationCode", authResponse.authorizationCode);
-        responseMap.put("authorizationAdditionalParameters", authResponse.additionalParameters);
+        responseMap.put("authorizationAdditionalParameters", param);
         return responseMap;
     }
 
