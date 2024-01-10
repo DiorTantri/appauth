@@ -454,6 +454,7 @@ public class FlutterAppauthPlugin implements FlutterPlugin, MethodCallHandler, P
 
 
     private void finishWithSuccess(Object data) {
+        Log.d(TAG, "finishWithSuccess: "+data);
         if (pendingOperation != null) {
             pendingOperation.result.success(data);
             pendingOperation = null;
