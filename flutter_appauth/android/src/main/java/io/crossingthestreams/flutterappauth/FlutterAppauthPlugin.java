@@ -494,6 +494,7 @@ public class FlutterAppauthPlugin implements FlutterPlugin, MethodCallHandler, P
                 String url = "";
                 url = intent.getData() != null ? intent.getData().toString() : "";
                 Log.d(TAG, "onActivityResult: uriString " + url);
+
                 final AuthorizationResponse authResponse = AuthorizationResponse.fromIntent(intent);
                 AuthorizationException ex = AuthorizationException.fromIntent(intent);
                 processAuthorizationData(authResponse, ex, requestCode == RC_AUTH_EXCHANGE_CODE);
@@ -517,7 +518,9 @@ public class FlutterAppauthPlugin implements FlutterPlugin, MethodCallHandler, P
     private void processAuthorizationData(final AuthorizationResponse authResponse, AuthorizationException authException, boolean exchangeCode) {
         Log.d(TAG, "processAuthorizationData: [AuthorizationResponse]" + authResponse + ", [AuthorizationException]" +authException + "[exchangeCode]" +exchangeCode);
         if (authException == null) {
-            if (exchangeCode) {
+            finishWithSuccess(authorizationResponseToMap(authResponse));
+
+            /* if (exchangeCode) {
                 AppAuthConfiguration.Builder authConfigBuilder = new AppAuthConfiguration.Builder();
                 if (allowInsecureConnections) {
                     authConfigBuilder.setConnectionBuilder(InsecureConnectionBuilder.INSTANCE);
@@ -545,6 +548,8 @@ public class FlutterAppauthPlugin implements FlutterPlugin, MethodCallHandler, P
             } else {
                 finishWithSuccess(authorizationResponseToMap(authResponse));
             }
+            */
+
         } else {
             Log.e(TAG, "processAuthorizationData: exc", authException);
             finishWithError(exchangeCode ? AUTHORIZE_AND_EXCHANGE_CODE_ERROR_CODE : AUTHORIZE_ERROR_CODE, String.format(AUTHORIZE_ERROR_MESSAGE_FORMAT, authException.error, authException.errorDescription), getCauseFromException(authException));
@@ -567,6 +572,8 @@ public class FlutterAppauthPlugin implements FlutterPlugin, MethodCallHandler, P
         return responseMap;
     }
 
+
+
     private Map<String, Object> authorizationResponseToMap(AuthorizationResponse authResponse) {
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("codeVerifier", authResponse.request.codeVerifier);
@@ -575,6 +582,7 @@ public class FlutterAppauthPlugin implements FlutterPlugin, MethodCallHandler, P
         responseMap.put("authorizationAdditionalParameters", authResponse.additionalParameters);
         return responseMap;
     }
+
 
     private class PendingOperation {
         final String method;
